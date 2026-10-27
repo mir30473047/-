@@ -299,10 +299,13 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
       master.connect(audio.destination);
     }
 
-    audio.resume().then(() => {
-      startMusic();
-    }).catch(() => {});
-  }
+    
+audio.resume().then(() => {
+  startMusic();
+}).catch((error) => {
+  alert("오디오 시작 실패: " + error.name + " - " + error.message);
+});
+
 
   document.addEventListener("pointerdown", (event) => {
     // 입력창을 누를 때는 효과음을 생략
