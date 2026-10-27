@@ -44,116 +44,6 @@ button,input,textarea,select{font:inherit}button{border:0;cursor:pointer;touch-a
 @media(min-width:500px){.app{padding-left:18px;padding-right:18px}.vn-box{left:16px;right:16px;bottom:15px}}
 </style>
 </head>
-
-<script>
-(() => {
-  let audio = null;
-  let master = null;
-  let musicTimer = null;
-  let noteIndex = 0;
-
-  // 귀엽고 통통 튀는 터치 효과음
-  function playTouchSound() {
-    if (!audio || audio.state !== "running") return;
-
-    const now = audio.currentTime;
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, now);
-    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.07);
-
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
-
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    osc.stop(now + 0.14);
-  }
-
-  // 동화 속 마법의 숲을 떠올리게 하는 배경 음악
-  function playMusicNote(freq, duration) {
-    if (!audio || audio.state !== "running") return;
-
-    const now = audio.currentTime;
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-
-    osc.type = "sine";
-    osc.frequency.value = freq;
-
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.035, now + 0.04);
-    gain.gain.setValueAtTime(0.025, now + duration * 0.5);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001, now + duration
-    );
-
-    osc.connect(gain);
-    gain.connect(master);
-    osc.start(now);
-    osc.stop(now + duration + 0.02);
-  }
-
-  function startMusic() {
-    if (musicTimer) return;
-
-    const melody = [
-      523.25, 659.25, 783.99, 659.25,
-      587.33, 698.46, 880.00, 698.46,
-      523.25, 659.25, 783.99, 1046.50,
-      880.00, 783.99, 659.25, 587.33
-    ];
-
-    musicTimer = setInterval(() => {
-      if (!audio || audio.state !== "running") return;
-
-      playMusicNote(melody[noteIndex], 0.42);
-
-      // 부드러운 화음이 일정 간격으로 어우러지도록
-      if (noteIndex % 4 === 0) {
-        playMusicNote(
-          melody[noteIndex] / 2, 1.1
-        );
-      }
-
-      noteIndex = (noteIndex + 1) % melody.length;
-    }, 380);
-  }
-
-  function initializeAudio() {
-    if (!audio) {
-      const AudioContextClass =
-        window.AudioContext || window.webkitAudioContext;
-
-      if (!AudioContextClass) return;
-
-      audio = new AudioContextClass();
-      master = audio.createGain();
-      master.gain.value = 0.7;
-      master.connect(audio.destination);
-    }
-
-    audio.resume().then(() => {
-      startMusic();
-    }).catch(() => {});
-  }
-
-  document.addEventListener("pointerdown", (event) => {
-    // 입력창을 누를 때는 효과음을 생략
-    if (event.target.closest("input, textarea, select")) {
-      initializeAudio();
-      return;
-    }
-
-    initializeAudio();
-    playTouchSound();
-  }, { passive: true });
-})();
-</script>
 <body>
 <div class="app" id="app">
   <header class="topbar">
@@ -314,6 +204,116 @@ $('permissionBtn').addEventListener('click',requestPermission);$('testNotice').a
 window.addEventListener('focus',checkReminders);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReminders()});
 loadEvents();render();$('listDate').value=state.selectedDate;$('pickDate').value=state.selectedDate;state.briefing=forSelected();startGreeting();updatePermissionStatus();setInterval(checkReminders,15000);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {})); }
+})();
+</script>
+
+<script>
+(() => {
+  let audio = null;
+  let master = null;
+  let musicTimer = null;
+  let noteIndex = 0;
+
+  // 귀엽고 통통 튀는 터치 효과음
+  function playTouchSound() {
+    if (!audio || audio.state !== "running") return;
+
+    const now = audio.currentTime;
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.07);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.12, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now + 0.14);
+  }
+
+  // 동화 속 마법의 숲을 떠올리게 하는 배경 음악
+  function playMusicNote(freq, duration) {
+    if (!audio || audio.state !== "running") return;
+
+    const now = audio.currentTime;
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.035, now + 0.04);
+    gain.gain.setValueAtTime(0.025, now + duration * 0.5);
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001, now + duration
+    );
+
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
+  }
+
+  function startMusic() {
+    if (musicTimer) return;
+
+    const melody = [
+      523.25, 659.25, 783.99, 659.25,
+      587.33, 698.46, 880.00, 698.46,
+      523.25, 659.25, 783.99, 1046.50,
+      880.00, 783.99, 659.25, 587.33
+    ];
+
+    musicTimer = setInterval(() => {
+      if (!audio || audio.state !== "running") return;
+
+      playMusicNote(melody[noteIndex], 0.42);
+
+      // 부드러운 화음이 일정 간격으로 어우러지도록
+      if (noteIndex % 4 === 0) {
+        playMusicNote(
+          melody[noteIndex] / 2, 1.1
+        );
+      }
+
+      noteIndex = (noteIndex + 1) % melody.length;
+    }, 380);
+  }
+
+  function initializeAudio() {
+    if (!audio) {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) return;
+
+      audio = new AudioContextClass();
+      master = audio.createGain();
+      master.gain.value = 0.7;
+      master.connect(audio.destination);
+    }
+
+    audio.resume().then(() => {
+      startMusic();
+    }).catch(() => {});
+  }
+
+  document.addEventListener("pointerdown", (event) => {
+    // 입력창을 누를 때는 효과음을 생략
+    if (event.target.closest("input, textarea, select")) {
+      initializeAudio();
+      return;
+    }
+
+    initializeAudio();
+    playTouchSound();
+  }, { passive: true });
 })();
 </script>
 </body>
