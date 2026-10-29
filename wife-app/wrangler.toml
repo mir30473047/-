@@ -1,0 +1,5 @@
+name = "our-family-room-ai"
+main = "worker.js"
+compatibility_date = "2026-10-29"
+[vars]
+OPENAI_MODEL = "gpt-6-astra"
